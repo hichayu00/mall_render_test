@@ -1,0 +1,65 @@
+{% extends "catalog_base.html" %}
+
+{% block title %}상품 목록{% endblock %}
+
+{% block content %}
+    {% if paid_order %}
+        <p class="success" role="status">주문 #{{ paid_order }}의 모의 결제가 완료되었습니다.
+            <a href="/orders/{{ paid_order }}">주문 확인</a>
+        </p>
+    {% endif %}
+    <section class="welcome-hero" aria-labelledby="welcome-title">
+        <div class="welcome-copy">
+            <p class="eyebrow"><span class="tiny-sun" aria-hidden="true">✳</span> 다정한 일상을 위한 작은 선택</p>
+            <h1 id="welcome-title">매일의 작은 온기를<br><em>골라 담아요.</em></h1>
+            <p class="welcome-description">좋아하는 컵에 담긴 한 잔의 여유,<br>가볍게 들고 나서는 가방 하나.<br>오래 곁에 두고 싶은 일상의 물건을 만나보세요.</p>
+            <a class="hero-link" href="#product-list">천천히 둘러보기 <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="welcome-visual">
+            <img class="hero-photo" src="{{ url_for('static', path='/images/products/mug.png') }}"
+                 alt="부드러운 빛 아래 놓인 아이보리 머그컵" width="1448" height="1086" fetchpriority="high">
+            <div class="hero-caption"><span aria-hidden="true">✳</span><span>작고 소박해서,<br>더 자주 손이 가는 것들.</span></div>
+        </div>
+    </section>
+    <section id="product-list" class="catalog-selection" aria-labelledby="selection-title">
+        <div class="catalog-heading">
+            <div>
+                <p class="eyebrow">일상에 스며드는 물건</p>
+                <h2 id="selection-title">오늘의 작은 발견</h2>
+            </div>
+            <p class="selection-count">상품 목록 <span>{{ products | length }}개</span></p>
+        </div>
+    {% if products %}
+        <div class="product-grid">
+            {% for product in products %}
+                <article class="product-card">
+                    <a class="product-link" href="/products/{{ product.id }}">
+                        <div class="product-image">
+                            {% if product.display_image %}
+                                <img src="{{ product.display_image }}" alt="{{ product.name }}" loading="lazy">
+                            {% else %}
+                                <span class="image-placeholder">상품 사진 준비 중</span>
+                            {% endif %}
+                        </div>
+                        <div class="product-card-content">
+                            {% if product.stock == 0 %}
+                                <span class="stock-badge sold-out">품절</span>
+                            {% else %}
+                                <span class="stock-badge">판매 중</span>
+                            {% endif %}
+                            <h3>{{ product.name }}</h3>
+                            <p class="product-price">{{ "{:,}".format(product.price) }}원</p>
+                            <span class="detail-link">상품 자세히 보기 →</span>
+                        </div>
+                    </a>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h2>아직 등록된 상품이 없습니다.</h2>
+            <p>다음에 다시 방문해 주세요.</p>
+        </div>
+    {% endif %}
+    </section>
+{% endblock %}

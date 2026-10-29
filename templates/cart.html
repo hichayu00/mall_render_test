@@ -1,0 +1,47 @@
+{% extends "catalog_base.html" %}
+{% block title %}장바구니{% endblock %}
+{% block content %}
+    <h1>장바구니</h1>
+    <p class="hint">현재 판매가 기준이며, 장바구니에 담아도 재고가 예약되지는 않습니다.</p>
+    {% if cart['items'] %}
+        <div class="shopping-layout">
+            <div class="shopping-items">
+                {% for item in cart['items'] %}
+                    <article class="shopping-item">
+                        <h2><a href="/products/{{ item.product_id }}">{{ item.product_name }}</a></h2>
+                        <p>{{ "{:,}".format(item.unit_price) }}원 × {{ item.quantity }}개</p>
+                        <p class="product-price">{{ "{:,}".format(item.line_total) }}원</p>
+                        {% if not item.is_active or item.stock < item.quantity %}
+                            <p class="error">판매가 중단됐거나 재고가 부족합니다. 수량을 변경하거나 삭제해 주세요.</p>
+                        {% endif %}
+                        {% if item.saved_unit_price != item.unit_price %}
+                            <p class="hint">담은 시점과 가격이 달라 현재 가격을 표시합니다.</p>
+                        {% endif %}
+                        <form action="/cart/items/{{ item.product_id }}/quantity" method="post" class="quantity-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                            <label for="qty-{{ item.product_id }}">수량</label>
+                            <input id="qty-{{ item.product_id }}" type="number" name="quantity" value="{{ item.quantity }}" min="1" max="999" required>
+                            <button type="submit">수량 변경</button>
+                        </form>
+                        <form action="/cart/items/{{ item.product_id }}/remove" method="post">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                            <button type="submit" class="secondary">삭제</button>
+                        </form>
+                    </article>
+                {% endfor %}
+            </div>
+            <aside class="order-summary" aria-label="장바구니 합계">
+                <h2>주문 금액</h2>
+                <p class="product-price">{{ "{:,}".format(cart.total_amount) }}원</p>
+                <p class="hint">배송비 0원</p>
+                <a class="button" href="/checkout">주문서 작성</a>
+                <p><a href="/products">계속 쇼핑하기</a></p>
+            </aside>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p>장바구니가 비어 있습니다.</p>
+            <a class="button" href="/products">상품 보러 가기</a>
+        </div>
+    {% endif %}
+{% endblock %}

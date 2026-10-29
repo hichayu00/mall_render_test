@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}상품 목록{% endblock %} | 작은 쇼핑몰</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}">
+</head>
+<body class="catalog-body">
+    <div class="announcement">작은 물건으로 채우는, 포근한 하루</div>
+    <header class="site-header">
+        <a class="site-logo" href="/products">
+            <span class="brand-mark" aria-hidden="true">✳</span>
+            <span>작은 쇼핑몰<small>일상에 머무는 작은 온기</small></span>
+        </a>
+        <nav aria-label="주요 메뉴">
+            <a href="/products" {% if request.url.path.startswith('/products') %}aria-current="page"{% endif %}>상품 목록</a>
+            <a href="/cart" {% if request.url.path == '/cart' %}aria-current="page"{% endif %}>장바구니</a>
+            {% if user %}
+                <a href="/account" {% if request.url.path.startswith('/account') %}aria-current="page"{% endif %}>회원정보</a>
+                <a href="/orders" {% if request.url.path.startswith('/orders') %}aria-current="page"{% endif %}>주문내역</a>
+            {% else %}
+                <a href="/login?next={{ request.url.path | urlencode }}">로그인</a>
+                <a href="/signup">회원가입</a>
+            {% endif %}
+        </nav>
+    </header>
+    <main class="catalog-main">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+        <div>
+            <p class="footer-brand"><span aria-hidden="true">✳</span> 작은 쇼핑몰</p>
+            <p>매일 곁에 두고 싶은 물건,<br>그 안에 담긴 작은 따뜻함.</p>
+        </div>
+        <p class="footer-note">당신의 일상이 조금 더 포근해지기를.</p>
+    </footer>
+</body>
+</html>

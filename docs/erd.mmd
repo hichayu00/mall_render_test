@@ -1,0 +1,37 @@
+erDiagram
+    shop_users ||--o{ orders : "주문"
+    orders ||--o{ order_items : "상품 구성"
+    products ||--o{ order_items : "상품 참조"
+    orders ||--o{ payments : "결제 시도"
+
+    shop_users {
+        bigint id PK
+        text email UK
+        text password_hash
+        text name
+    }
+    products {
+        bigint id PK
+        text name
+        bigint price
+        integer stock
+    }
+    orders {
+        bigint id PK
+        bigint user_id FK
+        text status
+        bigint total_amount
+    }
+    order_items {
+        bigint id PK
+        bigint order_id FK
+        bigint product_id FK
+        bigint unit_price
+        integer quantity
+    }
+    payments {
+        bigint id PK
+        bigint order_id FK
+        text status
+        bigint amount
+    }

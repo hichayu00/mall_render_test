@@ -1,0 +1,39 @@
+{% extends "catalog_base.html" %}
+{% block title %}주문 {{ order.id }}{% endblock %}
+{% block content %}
+    <h1>주문 #{{ order.id }}</h1>
+    <p class="stock-badge">{{ '결제 대기' if order.status == 'pending' else '결제 완료' }}</p>
+    <div class="shopping-layout">
+        <section class="shopping-item">
+            <h2>주문 상품</h2>
+            {% for item in order['items'] %}
+                <p>{{ item.product_name }} · {{ item.quantity }}개<br>{{ "{:,}".format(item.unit_price) }}원 × {{ item.quantity }} = {{ "{:,}".format(item.unit_price * item.quantity) }}원</p>
+            {% endfor %}
+            <h2>배송정보</h2>
+            <p>{{ order.recipient_name }} · {{ order.recipient_phone }}</p>
+            <p class="product-description">{{ order.shipping_address }}</p>
+        </section>
+        <aside class="order-summary" aria-label="주문 금액">
+            <h2>최종 금액</h2>
+            <p class="product-price">{{ "{:,}".format(order.total_amount) }}원</p>
+            <p class="hint">{{ '아직 결제되지 않았습니다.' if order.status == 'pending' else '결제된 주문입니다.' }}</p>
+            {% if order.status == 'pending' %}
+                <a class="button" href="/orders/{{ order.id }}/pay">결제하기</a>
+            {% endif %}
+            <p><a href="/orders">주문내역 보기</a></p>
+            <a class="button" href="/products">상품 목록으로</a>
+        </aside>
+    </div>
+    {% if order.payments %}
+        <section class="shopping-item payment-history" aria-labelledby="payment-history-title">
+            <h2 id="payment-history-title">결제 시도 기록</h2>
+            {% for attempt in order.payments %}
+                <div class="payment-attempt">
+                    <p><strong>결제 #{{ attempt.id }} · {{ '성공' if attempt.status == 'succeeded' else '실패' }}</strong>
+                        · {{ "{:,}".format(attempt.amount) }}원</p>
+                    {% if attempt.failure_reason %}<p class="hint">{{ attempt.failure_reason }}</p>{% endif %}
+                </div>
+            {% endfor %}
+        </section>
+    {% endif %}
+{% endblock %}

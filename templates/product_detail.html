@@ -1,0 +1,49 @@
+{% extends "catalog_base.html" %}
+
+{% block title %}{{ product.name if product else '상품을 찾을 수 없습니다' }}{% endblock %}
+
+{% block content %}
+    <p class="back-link"><a href="/products">← 상품 목록으로</a></p>
+    {% if product %}
+        <article class="product-detail">
+            <div class="product-image detail-image">
+                {% if product.display_image %}
+                    <img src="{{ product.display_image }}" alt="{{ product.name }}">
+                {% else %}
+                    <span class="image-placeholder">상품 사진 준비 중</span>
+                {% endif %}
+            </div>
+            <div class="product-detail-content">
+                <p class="eyebrow">상품 코드 {{ product.sku }}</p>
+                <h1>{{ product.name }}</h1>
+                <p class="product-price detail-price">{{ "{:,}".format(product.price) }}원</p>
+                {% if product.stock == 0 %}
+                    <p class="stock-badge sold-out">품절 · 현재 구매할 수 없습니다.</p>
+                {% else %}
+                    <p class="stock-badge">재고 {{ product.stock }}개</p>
+                {% endif %}
+                <h2 class="section-title">상품 설명</h2>
+                <p class="product-description">{{ product.description or '등록된 상품 설명이 없습니다.' }}</p>
+                {% if product.stock > 0 %}
+                    <form action="/cart/items" method="post">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                        <label for="quantity">수량</label>
+                        <input id="quantity" name="quantity" type="number" min="1"
+                               max="{{ [product.stock, 999] | min }}" value="1" required>
+                        <div class="action-row">
+                            <button type="submit" name="action" value="cart">장바구니 담기</button>
+                            <button type="submit" name="action" value="buy" class="secondary">바로 구매</button>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </article>
+    {% else %}
+        <div class="empty-state">
+            <h1>상품을 찾을 수 없습니다.</h1>
+            <p>상품이 없거나 판매가 중단되었습니다. 목록에서 다른 상품을 확인해 주세요.</p>
+            <a class="button" href="/products">상품 목록 보기</a>
+        </div>
+    {% endif %}
+{% endblock %}

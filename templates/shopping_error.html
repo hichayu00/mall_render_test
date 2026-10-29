@@ -1,0 +1,10 @@
+{% extends "catalog_base.html" %}
+{% block title %}요청 확인{% endblock %}
+{% block content %}
+    <section class="empty-state">
+        <h1>요청을 확인해 주세요.</h1>
+        <p class="error" role="alert">{{ message }}</p>
+        <a class="button" href="{{ back_path }}">돌아가서 확인하기</a>
+        <p><a href="/products">상품 목록으로</a></p>
+    </section>
+{% endblock %}

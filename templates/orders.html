@@ -1,0 +1,36 @@
+{% extends "catalog_base.html" %}
+{% block title %}주문·구매내역{% endblock %}
+{% block content %}
+    <h1>주문·구매내역</h1>
+    <p class="hint">결제 대기 주문과 구매가 완료된 주문을 확인하세요.</p>
+    <nav class="history-filters" aria-label="주문 상태 선택">
+        <a href="/orders" {% if selected_status == 'all' %}aria-current="page"{% endif %}>전체</a>
+        <a href="/orders?status=pending" {% if selected_status == 'pending' %}aria-current="page"{% endif %}>결제 대기</a>
+        <a href="/orders?status=paid" {% if selected_status == 'paid' %}aria-current="page"{% endif %}>구매 완료</a>
+    </nav>
+    {% if orders %}
+        <div class="shopping-items">
+            {% for order in orders %}
+                <article class="shopping-item history-item">
+                    <div>
+                        <p class="eyebrow">주문 #{{ order.id }} · {{ order.placed_display }} (한국시간)</p>
+                        <h2>{{ order.first_product_name or '주문 상품' }}{% if order.item_count > 1 %} 외 {{ order.item_count - 1 }}종{% endif %}</h2>
+                        <p class="stock-badge {{ 'pending-badge' if order.status == 'pending' else '' }}">{{ '결제 대기' if order.status == 'pending' else '구매 완료' }}</p>
+                        <p class="product-price">{{ "{:,}".format(order.total_amount) }}원</p>
+                    </div>
+                    <div class="history-actions">
+                        <a class="button secondary" href="/orders/{{ order.id }}">주문 상세</a>
+                        {% if order.status == 'pending' %}
+                            <a class="button" href="/orders/{{ order.id }}/pay">결제하기</a>
+                        {% endif %}
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p>선택한 상태의 주문이 없습니다.</p>
+            <a class="button" href="/products">상품 보러 가기</a>
+        </div>
+    {% endif %}
+{% endblock %}

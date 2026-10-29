@@ -1,0 +1,37 @@
+{% extends "catalog_base.html" %}
+{% block title %}주문서{% endblock %}
+{% block content %}
+    <h1>주문서</h1>
+    <p class="hint">상품·수량·최종 금액을 확인하고 배송정보를 입력해 주세요.</p>
+    <div class="shopping-layout">
+        <section class="shopping-item">
+            <h2>배송정보</h2>
+            <form action="/orders" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <input type="hidden" name="source" value="{{ checkout.source }}">
+                <input type="hidden" name="cart_id" value="{{ checkout.cart_id or '' }}">
+                <input type="hidden" name="product_id" value="{{ checkout.product_id or '' }}">
+                <input type="hidden" name="quantity" value="{{ checkout.quantity }}">
+                <input type="hidden" name="checkout_key" value="{{ checkout.checkout_key }}">
+                <input type="hidden" name="fingerprint" value="{{ checkout.fingerprint }}">
+                <label for="recipient-name">수령인</label>
+                <input id="recipient-name" name="recipient_name" maxlength="50" autocomplete="shipping name" required>
+                <label for="recipient-phone">연락처</label>
+                <input id="recipient-phone" name="recipient_phone" type="tel" minlength="8" maxlength="30" autocomplete="shipping tel" placeholder="010-1234-5678" required>
+                <label for="shipping-address">배송주소</label>
+                <textarea id="shipping-address" name="shipping_address" minlength="5" maxlength="300" autocomplete="shipping street-address" rows="3" required></textarea>
+                <button type="submit">주문 생성</button>
+            </form>
+        </section>
+        <aside class="order-summary" aria-label="주문 상품과 합계">
+            <h2>주문 상품</h2>
+            {% for item in checkout['items'] %}
+                <p>{{ item.product_name }} · {{ item.quantity }}개<br>{{ "{:,}".format(item.unit_price * item.quantity) }}원</p>
+            {% endfor %}
+            <hr>
+            <p>배송비 0원</p>
+            <p class="product-price">합계 {{ "{:,}".format(checkout.total_amount) }}원</p>
+            <p class="hint">주문 생성 후 결제 대기 상태가 됩니다. 아직 결제되지는 않습니다.</p>
+        </aside>
+    </div>
+{% endblock %}

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>로그인 | 작은 쇼핑몰</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}">
+</head>
+<body class="account-body">
+    <main class="card" aria-labelledby="page-title">
+        <p class="brand"><span class="brand-mark" aria-hidden="true">✳</span> 작은 쇼핑몰</p>
+        <h1 id="page-title">로그인</h1>
+        <p class="hint">가입한 이메일과 비밀번호를 입력해 주세요.</p>
+        {% if notice %}
+            <p class="success" role="status">{{ notice }}</p>
+        {% endif %}
+        {% if error %}
+            <p class="error" role="alert">{{ error }}</p>
+        {% endif %}
+        <form action="/login" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <input type="hidden" name="next" value="{{ next_path }}">
+
+            <label for="email">이메일</label>
+            <input id="email" name="email" type="email" value="{{ email }}"
+                   maxlength="254" autocomplete="username" required>
+
+            <label for="password">비밀번호</label>
+            <input id="password" name="password" type="password"
+                   autocomplete="current-password" required>
+
+            <button type="submit">로그인</button>
+        </form>
+        <p class="hint">처음 오셨나요? <a href="/signup">회원가입</a></p>
+    </main>
+</body>
+</html>
